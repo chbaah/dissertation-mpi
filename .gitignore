@@ -1,0 +1,44 @@
+# R / RStudio
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Secrets and environment variables
+.env
+*.env
+*.pem
+*.key
+credentials.json
+service-account*.json
+
+# Large datasets
+# *.csv
+*.xlsx
+*.parquet
+
+# Trained models
+# *.rds
+# *.RDS
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# PostgreSQL local data
+pgdata/
+postgres-data/
+
+# Logs/temp
+*.log
+*.tmp
+*.temp
+
+# OS
+.DS_Store
+Thumbs.db

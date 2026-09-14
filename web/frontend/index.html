@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<!-- ===============================================================
+     MULTIDIMENSIONAL POVERTY INDEX WEB APPLICATION - BULK PREDICTION PAGE
+     ===============================================================
+     This page provides the main interface for viewing subnational MPI
+     predictions. It allows the user to select a country, regions and
+     collection years, view the returned prediction table and examine the
+     results using bar, line, choropleth and poverty classification charts.
+
+     The page uses the supporting JavaScript to retrieve data from the API
+     and update the interface dynamically. Plotly is used for the bar, line
+     and choropleth visualisations, while Chart.js is used for the
+     poverty classification donut chart.
+     =============================================================== -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+
+    <!-- Load Chart.js for the poverty-classification donut chart.
+         Plotly is loaded above for the bar, line and choropleth visualisations. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <title>MPI</title>
+</head>
+
+<body class="bodyid">
+    <div class="image-wrapper">
+        <img src="img/backgroundmap.jpg" alt="background map" />
+        <div class="overlay-text">
+            <h2>Multidimensional Poverty Index</h2>
+        </div>
+    </div>
+
+    <div class="nav-link-right">
+        <a href="predict.html" class="nav-link">
+            Single Observation Predictor →
+        </a>
+    </div>
+
+
+    <!-- ===============================================================
+     COUNTRY AND REGIONAL MPI SELECTION
+     ===============================================================
+     The country dropdown is populated from the database through the
+     supporting JavaScript. Selecting a country is used to retrieve the
+     corresponding subnational regions and available collection years.
+     -->
+    <div class="block-dropdown">
+        <label for="country-select">Select a country to view its subnational predicted MPI</label>
+        <select id="countryDropdown">
+            <option value=""> Loading countries...</option>
+        </select>
+
+    </div>
+
+    <!-- Display the regional selection controls for the selected country.
+         The region checkboxes and available collection years are populated
+         dynamically by the supporting JavaScript. -->
+    <div class="card">
+        <p class="region-title" id="regionTitle">Select regions</p>
+        <div class="checkbox-list" id="checkboxList">
+            <span class="empty-msg">Loading regions...</span>
+        </div>
+
+        <!-- Display the available collection years and submit the selected
+         country, regions and years for MPI prediction. -->
+        <div class="date-section" id="dateSection">
+            <div class="date-label-group">
+                <p>Select collection year(s)</p>
+                <div id="dateList"></div>
+            </div>
+            <div>
+                <button id="submitBtn">Submit</button>
+                <hr id="dividerLine" class="submithorline">
+            </div>
+        </div>
+    </div>
+
+    <!-- Display the predicted MPI values returned for the selected regions
+         and collection years. The table content is generated dynamically. -->
+    <div id="tableSection">
+        <h3 id="table-description">Predicted MPI Results</h3>
+        <div id="tableContainer"></div>
+    </div>
+
+
+
+
+
+
+    <!-- Allow the user to select the visualisation used to examine the
+         returned regional MPI predictions. -->
+    <div class="card" id="plotControlsSection" style="display: none;">
+        <p class="region-title">Visualise Results</p>
+        <div class="radio-group">
+            <label class="radio-item">
+                <input type="radio" name="chartType" value="bar" checked />
+                Bar chart — compare regions at a point in time
+            </label>
+            <label class="radio-item">
+                <input type="radio" name="chartType" value="line" />
+                Line chart — MPI trend per region across years
+            </label>
+            <label class="radio-item">
+                <input type="radio" name="chartType" value="map" />
+                Choropleth map — MPI by region on a map
+            </label>
+            <!-- Provide the poverty-classification view based on the MPI threshold. -->
+            <label class="radio-item">
+                <input type="radio" name="chartType" value="donut" />
+                Classification chart — poverty status breakdown
+            </label>
+        </div>
+        <div class="card-footer">
+            <button id="plotBtn">Plot</button>
+        </div>
+    </div>
+
+    <!-- ===============================================================
+         MPI RESULTS VISUALISATION
+         ===============================================================
+         The chart section contains four views of the returned predictions:
+         regional comparison, change across years, spatial distribution and
+         poverty-classification distribution.
+         -->
+    <div class="card" id="chartSection" style="display: none;">
+
+        <!-- Provide navigation between the four MPI visualisation tabs. -->
+        <div class="tab-bar">
+            <button class="tab-btn active" data-tab="barTab">Bar chart</button>
+            <button class="tab-btn" data-tab="lineTab">Trend lines</button>
+            <button class="tab-btn" data-tab="mapTab">Map</button>
+            <button class="tab-btn" data-tab="donutTab">Classification</button>
+        </div>
+
+        <!-- Bar chart used to compare predicted MPI values across the selected
+         regions for a particular collection year. -->
+        <div id="barTab" class="tab-content">
+            <div id="barChartContainer" style="width:100%; height:420px;"></div>
+        </div>
+
+        <!-- Line chart used to examine changes in predicted MPI for the selected
+         regions across the available collection years. -->
+        <div id="lineTab" class="tab-content" style="display:none;">
+            <div id="lineChartContainer" style="width:100%; height:420px;"></div>
+        </div>
+
+        <!-- Choropleth map used to display the spatial distribution of predicted
+         MPI values for the selected collection year. -->
+        <div id="mapTab" class="tab-content" style="display:none;">
+            <div id="mapYearSelector" style="display:none; margin-bottom:12px;">
+                <label style="font-size:14px; font-weight:500;">
+                    Display year on map:
+                </label>
+                <select id="mapYearSelect" onchange="updateMapYear()"></select>
+            </div>
+            <p id="mapStatus"></p>
+            <p id="mapWarning"></p>
+            <div id="mapContainer" style="width:100%; height:480px;"></div>
+        </div>
+
+        <!-- Classification view used to summarise the number of selected regions
+         classified as Poor and Non-Poor using the MPI poverty threshold. -->
+        <div id="donutTab" class="tab-content" style="display:none;">
+
+            <div class="donut-header">
+
+                <div class="donut-title-group">
+                    <h3 id="donutTitle" class="donut-main-title">
+                        Regional Distribution of Predicted MPI Poverty Classification
+                    </h3>
+
+                    <p class="donut-subtitle">
+                        Classification based on the multidimensional poverty threshold (MPI ≥ 0.3333)
+                    </p>
+                </div>
+
+                <select id="donutYearSelect" class="donut-year-select"></select>
+
+            </div>
+
+            <div class="donut-layout">
+
+                <!-- Render the poverty-classification distribution as a donut chart. -->
+                <div class="donut-chart-wrapper">
+                    <canvas id="donutCanvas" role="img"
+                        aria-label="Donut chart showing proportion of poor and non-poor regions">
+                        Poverty classification by predicted MPI.
+                    </canvas>
+                </div>
+
+                <!-- Display the total number of regions and the corresponding counts for
+         the Poor and Non-Poor classifications. -->
+                <div class="donut-metrics">
+                    <div class="metric-card">
+                        <p class="metric-label">Total regions</p>
+                        <p class="metric-value" id="donutTotal">—</p>
+                    </div>
+                    <div class="metric-card metric-nonpoor">
+                        <p class="metric-label">Non-Poor (MPI &lt; 0.3333)</p>
+                        <p class="metric-value" id="donutNonPoor">—</p>
+                    </div>
+                    <div class="metric-card metric-poor">
+                        <p class="metric-label">Poor (MPI ≥ 0.3333)</p>
+                        <p class="metric-value" id="donutPoor">—</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Provide the classification labels and MPI threshold used in the
+         donut chart. -->
+            <div class="donut-legend">
+                <span class="donut-legend-item">
+                    <span class="donut-legend-colour" style="background:#EF9F27;"></span>
+                    Non-Poor (MPI &lt; 0.3333)
+                </span>
+                <span class="donut-legend-item">
+                    <span class="donut-legend-colour" style="background:#E24B4A;"></span>
+                    Poor (MPI ≥ 0.3333)
+                </span>
+                <span class="donut-legend-threshold">Threshold: 0.3333</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <p class="copyrightyear"></p>
+
+
+    </div>
+    <script src="js/config.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

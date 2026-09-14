@@ -1,0 +1,811 @@
+.bodyid{
+    background-color: #0F5959
+}
+
+#predictbodyid {
+    background-color: #0F5959
+}
+.image-wrapper {
+    position: relative;
+}
+
+.image-wrapper img {
+    width: 100%;
+    display: block;
+    height: 25vh;
+    object-fit: cover;
+}
+
+.overlay-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.42);
+    /* dark tint */
+    color: white;
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+    
+        /* ── Block 1: Image with overlay ── */
+        .block-image {
+            position: relative;
+            width: 100%;
+            height: 25vh;
+            overflow: hidden;
+        }
+    
+        .block-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+    
+        .block-image .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    
+        .block-image .overlay h1 {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 500;
+            text-align: center;
+            padding: 0 2rem;
+            letter-spacing: 0.01em;
+        }
+    
+        /* ── Block 2: Country dropdown ── */
+        .block-dropdown {
+            background: #ffffff;
+            border-top: 1px solid #e5e5e5;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+    
+        .block-dropdown label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #666666;
+        }
+    
+        .block-dropdown select {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 15px;
+            border: 1px solid #cccccc;
+            border-radius: 8px;
+            background: #f9f9f9;
+            color: #222222;
+            cursor: pointer;
+        }
+    
+        .block-dropdown select:focus {
+            outline: none;
+            border-color: #888888;
+        }
+    
+        /* ── Result card ── */
+        .result-card {
+            display: none;
+            margin-top: 8px;
+            padding: 1rem 1.25rem;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            background: #f9f9f9;
+        }
+    
+        .result-card p {
+            font-size: 14px;
+            color: #666666;
+            margin-bottom: 4px;
+        }
+    
+        .result-card span {
+            font-size: 28px;
+            font-weight: 500;
+            color: #222222;
+        }
+
+
+/* region title — hidden by default */
+#regionTitle {
+    display: none;
+}
+
+/* date section — hidden by default */
+#dateSection {
+    display: none;
+}
+
+/* submit button — hidden by default */
+#submitBtn {
+    display: none;
+}
+
+/* 6 column grid for region checkboxes */
+.checkbox-list {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px 12px;
+    padding: 8px 0;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    /* prevent label wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* truncate very long names */
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    /* prevent checkbox from shrinking */
+    accent-color: #378ADD;
+    cursor: pointer;
+}
+
+/* responsive — fewer columns on smaller screens */
+@media (max-width: 900px) {
+    .checkbox-list {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .checkbox-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* year checkboxes — horizontal row aligned right */
+.date-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 0.5px solid #e5e5e5;
+}
+
+.date-label-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+.date-label-group p {
+    font-size: 13px;
+    font-weight: 500;
+    color: black;
+    margin: 0;
+}
+
+/* year checkboxes in a horizontal row */
+#dateList {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+#dateList .checkbox-item {
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+
+
+.region-title {
+    display: none;
+}
+
+.coldate-title {
+    display: none;
+}
+
+.coldate-title {
+    display: none;
+}
+
+.empty-msg {
+    display: none;
+}
+
+#tableSection {
+    display: none;
+
+}
+
+#table-description {
+    display: none;
+}
+
+#tableContainer {
+    display: none;
+}
+
+
+/* Wrapper to control overflow */
+.table-wrapper {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.20);
+    border-radius: 8px;
+    width: 100%;
+    overflow-x: auto;
+    /* horizontal scroll if needed */
+}
+
+/* Table styling */
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    /* white background */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.20);
+    /* soft shadow */
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 14px;
+    /* slightly smaller text */
+}
+
+/* Header styling */
+.styled-table thead {
+    background-color: #f5f5f5;
+}
+
+.styled-table th {
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+}
+
+/* Cell styling */
+.styled-table td {
+    padding: 8px;
+    border-top: 1px solid #eee;
+}
+
+/* Optional: prevent long text from stretching columns */
+.styled-table td,
+.styled-table th {
+    white-space: nowrap;
+}
+
+.low-mpi {
+    background-color: #fff3cd;
+    /* yellow */
+}
+
+.high-mpi {
+    background-color: #f8d7da;
+    /* red */
+}
+
+
+/* Radio group */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.radio-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: black;
+    cursor: pointer;
+}
+
+.radio-item input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #378ADD;
+}
+
+/* Tab bar */
+.tab-bar {
+    display: flex;
+    gap: 4px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    margin-bottom: 16px;
+}
+
+/* Individual tab button */
+.tab-btn {
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.tab-btn:hover {
+    color: var(--color-text-primary);
+}
+
+/* Active tab */
+.tab-btn.active {
+    color: var(--color-text-primary);
+    border-bottom: 2px solid #378ADD;
+}
+
+/* ── Predict page specific ───────────────────────────── */
+
+/* loading message */
+.form-loading-msg {
+    display: none;
+    font-size: 13px;
+    color: #666666;
+    padding: 8px 0;
+}
+
+/* form footer button row */
+.form-footer {
+    margin-top: 20px;
+    gap: 8px;
+    display: flex;
+}
+
+/* navigation link top right */
+.nav-link-right {
+    text-align: right;
+    padding: 8px 16px;
+}
+
+.nav-link {
+    font-size: 13px;
+    color: #378ADD;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+/* form section spacing */
+.form-section {
+    margin-bottom: 24px;
+}
+
+/* slider row — input and value side by side */
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.slider-row input[type="range"] {
+    flex: 1;
+    accent-color: #378ADD;
+    cursor: pointer;
+}
+
+/* percentage value shown next to slider */
+.slider-value {
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 42px;
+    text-align: right;
+}
+
+/* form hint text below each input */
+.form-hint {
+    font-size: 11px;
+    color: #999999;
+}
+
+/* form grid — 2 columns */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+/* individual form group */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: black;
+}
+
+.form-group input[type="number"] {
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    background: #fafafa;
+}
+
+.form-group input[type="number"]:focus {
+    outline: none;
+    border-color: #378ADD;
+}
+
+.form-variables {
+
+}
+
+
+/* ── Result section ──────────────────────────────────── */
+
+/* MPI score display box */
+.mpi-score-display {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: var(--border-radius-md, 8px);
+    margin-bottom: 16px;
+}
+
+/* label above the score */
+.mpi-score-label {
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 4px;
+}
+
+/* the big MPI number */
+.mpi-score-value {
+    font-size: 48px;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* poor / non-poor badge */
+.poverty-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 16px;
+    border-radius: 99px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* gauge chart container */
+.gauge-chart {
+    width: 100%;
+    height: 350px;
+}
+
+/* interpretation text box */
+.interpretation-text {
+    font-size: 13px;
+    color: #555555;
+    padding: 10px 14px;
+    background: #f9f9f9;
+    border-radius: var(--border-radius-md, 8px);
+    margin-top: 12px;
+    line-height: 1.6;
+}
+
+
+/* ── Table wrapper ───────────────────────────────────── */
+.table-wrapper {
+    border-radius: 10px;
+    overflow-x: auto;
+    /* ← change overflow:hidden to overflow-x:auto */
+    overflow-y: hidden;
+    /* keep vertical overflow hidden */
+    border: 2px solid #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    margin: 16px 0;
+}
+
+/* ── Table base ──────────────────────────────────────── */
+.styled-table {
+    width: 100%;
+    min-width: 800px;
+    /* ← ensures table never squishes below this width */
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #ffffff;
+    table-layout: auto;
+    /* ← let columns size themselves naturally */
+}
+
+/* ── Header row ──────────────────────────────────────── */
+.styled-table thead tr {
+    background: #2c6e49;
+    /* dark green header */
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 13px;
+    text-align: left;
+}
+
+.styled-table thead th {
+    padding: 12px 14px;
+    border-bottom: 2px solid #1a4a30;
+    white-space: nowrap;
+    /* keeps headers on one line */
+    min-width: 80px;
+    /* minimum column width */
+}
+
+/* ── Data rows ───────────────────────────────────────── */
+.styled-table tbody tr {
+    border-bottom: 0.5px solid #e5e5e5;
+    transition: background 0.15s;
+}
+
+/* alternating row colours — zebra striping */
+.styled-table tbody tr:nth-child(even) {
+    background: #f5f9f5;
+    /* very light green tint */
+}
+
+.styled-table tbody tr:nth-child(odd) {
+    background: #ffffff;
+}
+
+/* hover highlight */
+.styled-table tbody tr:hover {
+    background: #e8f4ea;
+    /* light green on hover */
+}
+
+.styled-table tbody td {
+    padding: 10px 14px;
+    color: #333333;
+    white-space: nowrap;
+    /* prevents cell content wrapping */
+    min-width: 80px;
+}
+
+/* remove border from last row */
+.styled-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* ── MPI value colour coding ─────────────────────────── */
+.low-mpi {
+    color: #1a6e3c;
+    /* dark green — non poor */
+    font-weight: 500;
+}
+
+.high-mpi {
+    color: #c0392b;
+    /* dark red — poor */
+    font-weight: 500;
+}
+
+/* ── Table description text ──────────────────────────── */
+#table-description {
+    font-size: 13px;
+    color: black;
+    margin-bottom: 8px;
+    display: none;
+}
+
+#dividerLine {
+    display: none;
+    border: none;
+    border-top: 1px solid #e5e5e5;
+    margin: 16px 0;
+}
+
+/* ── Donut chart section ─────────────────────────────── */
+#donutTab {
+    background-color: #D3D3D3;
+    /* white background */
+    color: #000000;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+/* optional: for dark mode */
+body.dark-mode #donutTab {
+    background-color: #000000;
+    color: #ffffff;
+}
+.donut-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.donut-header .region-title {
+    margin: 0;
+}
+
+.donut-year-select {
+    display: none;
+    font-size: 13px;
+}
+
+.donut-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.donut-chart-wrapper {
+    flex: 1;
+    min-width: 260px;
+    max-width: 340px;
+    height: 300px;
+    position: relative;
+}
+
+.donut-metrics {
+    flex: 1;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* metric cards */
+.metric-card {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 1rem;
+}
+
+.metric-label {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin: 0 0 4px;
+}
+
+.metric-value {
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+    color: var(--color-text-primary);
+}
+
+/* non-poor card */
+.metric-nonpoor {
+    background: #F0FFF4;
+}
+
+.metric-nonpoor .metric-label,
+.metric-nonpoor .metric-value {
+    color: #27500A;
+}
+
+/* poor card */
+.metric-poor {
+    background: #FFF0F0;
+}
+
+.metric-poor .metric-label,
+.metric-poor .metric-value {
+    color: #791F1F;
+}
+
+/* legend */
+.donut-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    align-items: center;
+}
+
+.donut-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.donut-legend-colour {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.donut-legend-threshold {
+    margin-left: auto;
+    font-style: italic;
+}
+
+/* =========================================================
+   DONUT CHART TITLE SECTION
+========================================================= */
+
+.donut-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.donut-title-group {
+    flex: 1;
+}
+
+.donut-main-title {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #222;
+    line-height: 1.4;
+}
+
+.donut-subtitle {
+    margin-top: 6px;
+    font-size: 0.92rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+body.dark-mode .donut-main-title {
+    color: #f2f2f2;
+}
+
+body.dark-mode .donut-subtitle {
+    color: #cccccc;
+}
+
+/* On predict.html */
+/* unit badge shown next to label */
+.unit-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 400;
+    color: #854F0B;
+    background: #FAEEDA;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!-- ===============================================================
+     MULTIDIMENSIONAL POVERTY INDEX WEB APPLICATION - SINGLE PREDICTION PAGE
+     ===============================================================
+     This page provides the interface for generating an MPI prediction for
+     one manually supplied observation. The predictor input fields are built
+     dynamically using information retrieved from the deployed R Plumber API.
+
+     The supporting JavaScript validates the entered predictor values, submits
+     the completed observation to the prediction endpoint and displays the
+     predicted MPI value, poverty classification, gauge visualisation and
+     interpretation returned by the API.
+     =============================================================== -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+    <title>Document</title>
+</head>
+
+<body class="bodyid">
+
+    <div class="image-wrapper">
+        <img src="img/backgroundmap.jpg" alt="background map" />
+        <div class="overlay-text">
+            <h2>Multidimensional Poverty Index - Single Prediction</h2>
+        </div>
+    </div>
+
+    <!-- Provide navigation back to the main subnational MPI prediction page. -->
+    <div class="nav-link-right">
+        <a href="index.html" class="nav-link">
+            ← Back to Subnational MPI
+        </a>
+    </div>
+
+
+    <!-- ===============================================================
+         SINGLE-OBSERVATION PREDICTION FORM
+         ===============================================================
+         The predictor fields within this section are generated dynamically
+         by predict.js using the predictor information returned by the API.
+         -->
+    <div class="card" id="predictionForm">
+
+        <p class="region-title">Predictor Variables</p>
+
+        <!-- Display a temporary message while the predictor information required
+         to construct the form is being retrieved from the API. -->
+        <p id="formLoadingMsg" class="form-loading-msg">
+            Loading predictor variables from model...
+        </p>
+
+        <!-- Provide the container in which the nighttime-light, land-cover and
+         infrastructure predictor fields are created dynamically. -->
+        <div class="form-grid" id="dynamicFormFields"></div>
+
+        <hr>
+
+        <!-- Provide controls for generating a prediction, filling the form with
+             default predictor values and clearing the current inputs. -->
+        <div class="card-footer form-footer">
+            <button id="predictBtn">Predict MPI</button>
+            <button id="defaultBtn">Fill Defaults</button>
+            <button id="clearBtn">Clear</button>
+        </div>
+    </div>
+
+
+
+    <!-- ===============================================================
+         SINGLE-OBSERVATION PREDICTION RESULT
+         ===============================================================
+         Keep the result section hidden until a prediction has been returned.
+         The section displays the predicted MPI value, poverty classification,
+         gauge visualisation and interpretation.
+         -->
+    <div class="card" id="resultSection" style="display:none;">
+        <p class="region-title">Prediction Result</p>
+
+        <!-- Display the predicted MPI value and the corresponding poverty
+         classification returned by the prediction API. -->
+        <div id="mpiScoreDisplay" class="mpi-score-display">
+            <p class="mpi-score-label">Predicted MPI Score</p>
+            <p id="mpiScoreValue" class="mpi-score-value">0.000</p>
+            <p id="povertyStatusBadge" class="poverty-badge"></p>
+        </div>
+
+        <!-- Provide the container used by Plotly to display the predicted MPI
+         value as a gauge together with the study poverty threshold. -->
+        <div id="gaugeChart" class="gauge-chart"></div>
+
+        <!-- Display the interpretation associated with the predicted MPI value
+         and poverty classification. -->
+        <p id="interpretationText" class="interpretation-text"></p>
+    </div>
+
+
+
+    <p class="copyrightyear"></p>
+    
+    <!-- Load variable for nodejs and plumber endpoint -->
+    <script src="js/config.js"></script>
+
+    <!-- Load the client-side functions used to construct the form, submit the
+         prediction request and display the returned result. -->
+    <script src="js/predict.js"></script>
+</body>
+
+</html>

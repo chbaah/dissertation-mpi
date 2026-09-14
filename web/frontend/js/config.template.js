@@ -1,0 +1,4 @@
+window.APP_CONFIG = {
+    NODE_API_URL: "${NODE_API_URL}",
+    PLUMBER_API_URL: "${PLUMBER_API_URL}"
+};
