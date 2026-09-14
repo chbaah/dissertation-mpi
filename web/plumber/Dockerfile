@@ -61,8 +61,8 @@ WORKDIR /app
 # COPY PLUMBER FILES
 # ============================================================================
 
-COPY code/plumber.R /app/plumber.R
-COPY code/run.R /app/run.R
+COPY web/plumber/code/plumber.R /app/plumber.R
+COPY web/plumber/code/run.R /app/run.R
 
 
 # ============================================================================
@@ -72,11 +72,11 @@ COPY code/run.R /app/run.R
 RUN mkdir -p /app/models
 
 
-COPY ../../models/bestmodelimages/xgb_ULTIMATE_best_model_space_filling_all_pred_notfm_20260420_015733.rds \
+COPY models/bestmodelimages/xgb_ULTIMATE_best_model_space_filling_all_pred_notfm_20260420_015733.rds \
      /app/models/xgb_ULTIMATE_best_model_space_filling_all_pred_notfm_20260420_015733.rds
 
 
-COPY ../../models/bestmodelimages/xgboost_all_pred_notfm_recipe.rds \
+COPY models/bestmodelimages/xgboost_all_pred_notfm_recipe.rds \
      /app/models/xgboost_all_pred_notfm_recipe.rds
 
 
