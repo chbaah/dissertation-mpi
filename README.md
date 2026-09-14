@@ -17,3 +17,6 @@ The project investigates the prediction of subnational Multidimensional Poverty 
 - `web/postgres/` - PostgreSQL database container configuration.
 - `models/` - Documentation relating to trained models.
 - `docs/` - Additional project documentation.
+=======
+# dissertation-mpi
+Host the final codes used for the dissertation. It also contains the codes for the web application
