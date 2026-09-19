@@ -3,6 +3,9 @@ FROM nginx:alpine
 # envsubst is provided by gettext
 RUN apk add --no-cache gettext
 
+# Replace the standard Nginx server configuration
+COPY web/frontend/default.conf /etc/nginx/conf.d/default.conf
+
 # Copy frontend files into nginx web directory
 COPY web/frontend/index.html web/frontend/predict.html /usr/share/nginx/html/
 

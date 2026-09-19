@@ -4,8 +4,8 @@ set -e
 # Use user-provided environment variables.
 # If none are supplied, use localhost defaults.
 
-export NODE_API_URL="${NODE_API_URL:-http://localhost:3000}"
-export PLUMBER_API_URL="${PLUMBER_API_URL:-http://localhost:3796}"
+export NODE_API_URL="${NODE_API_URL:-/node-api}"
+export PLUMBER_API_URL="${PLUMBER_API_URL:-/plumber-api}"
 
 echo "Configuring frontend:"
 echo "NODE_API_URL=${NODE_API_URL}"

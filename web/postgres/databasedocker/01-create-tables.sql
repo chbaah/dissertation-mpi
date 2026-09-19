@@ -1,28 +1,28 @@
-CREATE TABLE IF NOT EXISTS combined_prep_table (
-    id BIGSERIAL PRIMARY KEY,
-    country TEXT,
-    countrycode TEXT,
-    region TEXT,
-    collectiondate DATE,
-
-    ntlmeanintensity DOUBLE PRECISION,
-    ntlcoverageperc DOUBLE PRECISION,
-
-    lcumixedforestperc DOUBLE PRECISION,
-    lcuclosedshrublandsperc DOUBLE PRECISION,
-    lcuopenshrublandsperc DOUBLE PRECISION,
-    lcuwoodysavannasperc DOUBLE PRECISION,
-    lcusavannasperc DOUBLE PRECISION,
-    lcugrasslandsperc DOUBLE PRECISION,
-    lcucroplandsperc DOUBLE PRECISION,
-    lcuurbanbuiltupperc DOUBLE PRECISION,
-    lcucroplandnatvegperc DOUBLE PRECISION,
-    lcubarrenperc DOUBLE PRECISION,
-
-    builtschools DOUBLE PRECISION,
-    builtmedicalfacilities DOUBLE PRECISION,
-    builtroads DOUBLE PRECISION,
-    builtresidence DOUBLE PRECISION,
-
-    mpi DOUBLE PRECISION
+CREATE TABLE IF NOT EXISTS public.combined_prep_table
+(
+    "row.names" text COLLATE pg_catalog."default",
+    collectiondate date,
+    country text COLLATE pg_catalog."default",
+    countrycode text COLLATE pg_catalog."default",
+    region text COLLATE pg_catalog."default",
+    ntlmeanintensity double precision,
+    ntlcoverageperc double precision,
+    lcumixedforestperc double precision,
+    lcuclosedshrublandsperc double precision,
+    lcuopenshrublandsperc double precision,
+    lcuwoodysavannasperc double precision,
+    lcusavannasperc double precision,
+    lcugrasslandsperc double precision,
+    lcucroplandsperc double precision,
+    lcuurbanbuiltupperc double precision,
+    lcucroplandnatvegperc double precision,
+    lcubarrenperc double precision,
+    builtschools integer,
+    builtmedicalfacilities integer,
+    builtroads integer,
+    builtresidence integer,
+    mpi double precision
 );
+
+ALTER TABLE IF EXISTS public.combined_prep_table
+    OWNER TO postgres;

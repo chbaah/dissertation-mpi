@@ -90,7 +90,14 @@ const pool = new Pool({
 
 app.get('/api/countries', async (req, res) => {
     try {
-        const result = await pool.query('SELECT country_name FROM west_africa_countries;');
+        //const result = await pool.query('SELECT country_name FROM west_africa_countries;');
+        const result = await pool.query(`
+		SELECT DISTINCT country AS country_name
+            	FROM combined_prep_table
+            	WHERE country IS NOT NULL
+            	ORDER BY country_name;
+		`);
+
         console.log(result.rows)
         res.json(result.rows); // ← this line is missing
     } catch (err) {
@@ -104,7 +111,7 @@ app.get('/api/countries', async (req, res) => {
 // The country value is supplied as a query parameter by the frontend.
 
 app.get('/api/regions', async (req, res) => {
-    console.log('✅ /api/regions route hit');
+    console.log('/api/regions route hit');
     console.log('Query params:', req.query);
     try {
         const selectedCountry = req.query.country; // Read the selected country from the URL query parameters.

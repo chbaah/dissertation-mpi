@@ -41,8 +41,7 @@ dissertation-mpi/
 ├── data-acquisition
 │   └── data_acquisition-GEE-OSM.R
 ├── docs
-│   ├── DETAILSTEPS.md
-│   └── OLDDETAILSTEPS.md
+│   └── DETAILSTEPS.md
 ├── env
 │   ├── frontend.env.example
 │   ├── node.env.example
@@ -57,6 +56,7 @@ dissertation-mpi/
     ├── frontend
     │   ├── css
     │   │   └── styles.css
+    │   ├── default.conf
     │   ├── docker-entrypoint.sh
     │   ├── Dockerfile
     │   ├── img
@@ -213,14 +213,15 @@ PORT=3000
 
 ## Frontend
 
-For a local deployment where the browser and Docker host are the same machine:
+The Docker frontend uses Nginx as a reverse proxy for requests to the Node.js
+and Plumber APIs.
+
+Example `env/frontend.env`:
 
 ```text
-NODE_API_URL=http://localhost:3000
-PLUMBER_API_URL=http://localhost:3796
+NODE_API_URL=/node-api
+PLUMBER_API_URL=/plumber-api
 ```
-
-For a remote deployment, `localhost` must be replaced with a hostname or IP address that is reachable by the user's browser.
 
 ---
 
@@ -243,13 +244,29 @@ From the repository root:
 ```bash
 sudo docker build \
   -f web/postgres/Dockerfile \
-  -t chbaah/dissertation-mpi:postgres-v20260914 \
+  -t chbaah/dissertation-mpi:postgres-v20260916 \
   .
 ```
 
 The versioned tag identifies a specific build and should not subsequently be reused for a different image.
 
-## 4.2 Create the PostgreSQL data volume
+## 4.2 Tag a verified build as latest
+
+After testing the versioned image successfully:
+
+```bash
+sudo docker tag \
+  chbaah/dissertation-mpi:postgres-v20260916 \
+  chbaah/dissertation-mpi:postgres-latest
+```
+
+Both tags should point to the same image ID:
+
+```bash
+sudo docker images chbaah/dissertation-mpi
+```
+
+## 4.3 Create the PostgreSQL data volume
 
 Create a named Docker volume:
 
@@ -287,7 +304,7 @@ sudo docker volume create mpi_postgres_data
 
 **Warning:** removing the volume permanently deletes the PostgreSQL data stored in that volume.
 
-## 4.3 Run PostgreSQL
+## 4.4 Run PostgreSQL
 
 Recommended env-file method:
 
@@ -299,7 +316,7 @@ sudo docker run -d \
   -p 5432:5432 \
   -v mpi_postgres_data:/var/lib/postgresql/data \
   --restart unless-stopped \
-  chbaah/dissertation-mpi:postgres-v20260914
+  chbaah/dissertation-mpi:postgres-latest
 ```
 
 For local development, the variables can alternatively be supplied directly:
@@ -314,12 +331,12 @@ sudo docker run -d \
   -p 5432:5432 \
   -v mpi_postgres_data:/var/lib/postgresql/data \
   --restart unless-stopped \
-  chbaah/dissertation-mpi:postgres-v20260914
+  chbaah/dissertation-mpi:postgres-latest
 ```
 
 The direct password shown above is for local testing only.
 
-## 4.4 Verify PostgreSQL
+## 4.5 Verify PostgreSQL
 
 Check the container:
 
@@ -348,21 +365,6 @@ sudo docker exec mpi-postgres \
   -c "SELECT COUNT(*) FROM public.combined_prep_table;"
 ```
 
-## 4.5 Tag a verified build as latest
-
-After testing the versioned image successfully:
-
-```bash
-sudo docker tag \
-  chbaah/dissertation-mpi:postgres-v20260914 \
-  chbaah/dissertation-mpi:postgres-latest
-```
-
-Both tags should point to the same image ID:
-
-```bash
-sudo docker images chbaah/dissertation-mpi
-```
 
 ## 4.6 Push PostgreSQL images to Docker Hub
 
@@ -375,7 +377,7 @@ sudo docker login
 Push the immutable version:
 
 ```bash
-sudo docker push chbaah/dissertation-mpi:postgres-v20260914
+sudo docker push chbaah/dissertation-mpi:postgres-v20260916
 ```
 
 Then push the current/latest pointer:
@@ -389,7 +391,7 @@ sudo docker push chbaah/dissertation-mpi:postgres-latest
 Specific version:
 
 ```bash
-sudo docker pull chbaah/dissertation-mpi:postgres-v20260914
+sudo docker pull chbaah/dissertation-mpi:postgres-v20260916
 ```
 
 Current version:
@@ -439,12 +441,26 @@ The R Plumber service performs MPI predictions. It loads the trained XGBoost mod
 
 ```bash
 sudo docker build \
+  --progress=plain \
   -f web/plumber/Dockerfile \
-  -t chbaah/dissertation-mpi:plumber-v20260914 \
+  -t chbaah/dissertation-mpi:plumber-v20260916 \
   .
 ```
 
-## 5.2 Run the Plumber container
+## 5.2 Tag and push
+
+After successful testing:
+
+```bash
+sudo docker tag \
+  chbaah/dissertation-mpi:plumber-v20260916 \
+  chbaah/dissertation-mpi:plumber-latest
+
+sudo docker push chbaah/dissertation-mpi:plumber-v20260916
+sudo docker push chbaah/dissertation-mpi:plumber-latest
+```
+
+## 5.3 Run the Plumber container
 
 Ensure PostgreSQL is running first:
 
@@ -462,7 +478,7 @@ sudo docker run -d \
   --env-file env/plumber.env \
   -p 3796:3796 \
   --restart unless-stopped \
-  chbaah/dissertation-mpi:plumber-v20260914
+  chbaah/dissertation-mpi:plumber-latest
 ```
 
 Alternatively:
@@ -484,10 +500,10 @@ sudo docker run -d \
   -e RECIPE_FILE=xgboost_all_pred_notfm_recipe.rds \
   -p 3796:3796 \
   --restart unless-stopped \
-  chbaah/dissertation-mpi:plumber-v20260914
+  chbaah/dissertation-mpi:plumber-latest
 ```
 
-## 5.3 Verify the Plumber service
+## 5.4 Verify the Plumber service
 
 Check logs:
 
@@ -503,23 +519,10 @@ curl http://localhost:3796/api/health
 
 The response should indicate the service is running and that the model and recipe loaded successfully.
 
-## 5.4 Tag and push
-
-After successful testing:
-
-```bash
-sudo docker tag \
-  chbaah/dissertation-mpi:plumber-v20260914 \
-  chbaah/dissertation-mpi:plumber-latest
-
-sudo docker push chbaah/dissertation-mpi:plumber-v20260914
-sudo docker push chbaah/dissertation-mpi:plumber-latest
-```
-
 ## 5.5 Pull a prebuilt image
 
 ```bash
-sudo docker pull chbaah/dissertation-mpi:plumber-v20260914
+sudo docker pull chbaah/dissertation-mpi:plumber-v20260916
 ```
 
 or:
@@ -564,11 +567,24 @@ The Node.js/Express service provides application API endpoints and communicates 
 ```bash
 sudo docker build \
   -f web/node/Dockerfile \
-  -t chbaah/dissertation-mpi:node-v20260914 \
+  -t chbaah/dissertation-mpi:node-v20260917 \
   .
 ```
 
-## 6.2 Run the Node.js container
+## 6.2 Tag and push
+
+After successful testing:
+
+```bash
+sudo docker tag \
+  chbaah/dissertation-mpi:node-v20260917 \
+  chbaah/dissertation-mpi:node-latest
+
+sudo docker push chbaah/dissertation-mpi:node-v20260917
+sudo docker push chbaah/dissertation-mpi:node-latest
+```
+
+## 6.3 Run the Node.js container
 
 ```bash
 sudo docker run -d \
@@ -577,7 +593,7 @@ sudo docker run -d \
   --env-file env/node.env \
   -p 3000:3000 \
   --restart unless-stopped \
-  chbaah/dissertation-mpi:node-v20260914
+  chbaah/dissertation-mpi:node-latest
 ```
 
 Alternatively:
@@ -594,10 +610,10 @@ sudo docker run -d \
   -e PORT=3000 \
   -p 3000:3000 \
   --restart unless-stopped \
-  chbaah/dissertation-mpi:node-v20260914
+  chbaah/dissertation-mpi:node-latest
 ```
 
-## 6.3 Verify the Node.js service
+## 6.4 Verify the Node.js service
 
 Check logs:
 
@@ -608,38 +624,19 @@ sudo docker logs mpi-node
 Test the health endpoint:
 
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:3000/api/health
 ```
 
-If the database health endpoint is implemented, it can also be tested with:
-
-```bash
-curl http://localhost:3000/health/database
-```
-
-An application endpoint can be tested with:
+A node js endpoint can be tested with:
 
 ```bash
 curl http://localhost:3000/api/countries
 ```
 
-## 6.4 Tag and push
-
-After successful testing:
-
-```bash
-sudo docker tag \
-  chbaah/dissertation-mpi:node-v20260914 \
-  chbaah/dissertation-mpi:node-latest
-
-sudo docker push chbaah/dissertation-mpi:node-v20260914
-sudo docker push chbaah/dissertation-mpi:node-latest
-```
-
 ## 6.5 Pull a prebuilt image
 
 ```bash
-sudo docker pull chbaah/dissertation-mpi:node-v20260914
+sudo docker pull chbaah/dissertation-mpi:node-v20260917
 ```
 
 or:
@@ -714,18 +711,43 @@ The Node.js API listens on port `3000` by default.
 
 The frontend provides the browser-based MPI prediction interface.
 
-The Docker deployment uses Nginx to serve the static HTML, CSS, JavaScript, and image files.
+The Docker deployment uses Nginx to serve the static HTML, CSS, JavaScript, and image files. Nginx also acts as a reverse proxy, forwarding API requests from the frontend to the Node.js and Plumber containers over the mpi-network Docker network. The Nginx reverse-proxy configuration is stored in:
+
+```bash
+web/frontend/default.conf
+```
+
+The configuration serves the frontend files and forwards requests using the following paths:
+
+```text
+- /node-api/ forwards requests to Node.js API (Node container)
+- /plumber-api/ forwards requests to R Plumber API (Plumber container)
+```
+
 
 ## 7.1 Build the frontend image
 
 ```bash
 sudo docker build \
   -f web/frontend/Dockerfile \
-  -t chbaah/dissertation-mpi:frontend-v20260914 \
+  -t chbaah/dissertation-mpi:frontend-v20260917 \
   .
 ```
 
-## 7.2 Run the frontend container
+## 7.2 Tag and push
+
+After successful testing:
+
+```bash
+sudo docker tag \
+  chbaah/dissertation-mpi:frontend-v20260917 \
+  chbaah/dissertation-mpi:frontend-latest
+
+sudo docker push chbaah/dissertation-mpi:frontend-v20260917
+sudo docker push chbaah/dissertation-mpi:frontend-latest
+```
+
+## 7.3 Run the frontend container
 
 ```bash
 sudo docker run -d \
@@ -734,7 +756,7 @@ sudo docker run -d \
   --env-file env/frontend.env \
   -p 8080:80 \
   --restart unless-stopped \
-  chbaah/dissertation-mpi:frontend-v20260914
+  chbaah/dissertation-mpi:frontend-latest
 ```
 
 Alternatively, for a local deployment:
@@ -743,24 +765,18 @@ Alternatively, for a local deployment:
 sudo docker run -d \
   --name mpi-frontend \
   --network mpi-network \
-  -e NODE_API_URL=http://localhost:3000 \
-  -e PLUMBER_API_URL=http://localhost:3796 \
+  -e NODE_API_URL=/node-api \
+  -e PLUMBER_API_URL=/plumber-api \
   -p 8080:80 \
   --restart unless-stopped \
-  chbaah/dissertation-mpi:frontend-v20260914
+  chbaah/dissertation-mpi:frontend-latest
 ```
 
-The values supplied to `NODE_API_URL` and `PLUMBER_API_URL` are ultimately used by JavaScript running in the user's browser. Therefore, these URLs must be reachable **from the browser**, not merely from inside the Docker network.
+The frontend variables use relative paths rather than Docker container names or host ports. JavaScript running in the browser sends requests such as /node-api/countries to the same Nginx server that provided the frontend. Nginx then forwards the request to mpi-node:3000 over the Docker network. Similarly, requests beginning with /plumber-api/ are forwarded to mpi-plumber:3796.
 
-For a remote deployment, values such as:
+This prevents the browser from having to resolve Docker-internal container names such as mpi-node and mpi-plumber.
 
-```text
-http://localhost:3000
-```
-
-must therefore be replaced with the appropriate server hostname, IP address, or public URL.
-
-## 7.3 Verify the frontend
+## 7.4 Verify the frontend
 
 Check the logs:
 
@@ -780,6 +796,17 @@ The frontend should then be accessible locally at:
 http://localhost:8080
 ```
 
+The following two tests can be used to confirm that Nginx can reverse proxy requests to the Node.js and Plumber APIs:
+
+
+```text
+curl http://localhost:8080/node-api/api/countries
+```
+
+```text
+curl http://localhost:8080/plumber-api/api/health
+```
+
 The generated runtime configuration can also be inspected inside the container:
 
 ```bash
@@ -787,23 +814,10 @@ sudo docker exec mpi-frontend \
   cat /usr/share/nginx/html/js/config.js
 ```
 
-## 7.4 Tag and push
-
-After successful testing:
-
-```bash
-sudo docker tag \
-  chbaah/dissertation-mpi:frontend-v20260914 \
-  chbaah/dissertation-mpi:frontend-latest
-
-sudo docker push chbaah/dissertation-mpi:frontend-v20260914
-sudo docker push chbaah/dissertation-mpi:frontend-latest
-```
-
 ## 7.5 Pull a prebuilt image
 
 ```bash
-sudo docker pull chbaah/dissertation-mpi:frontend-v20260914
+sudo docker pull chbaah/dissertation-mpi:frontend-v20260917
 ```
 
 or:
@@ -905,13 +919,23 @@ curl http://localhost:3796/api/health
 The Node.js API can be checked using:
 
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:3000/api/health
 ```
 
 The frontend can also be checked from the command line using:
 
 ```bash
 curl -I http://localhost:8080
+```
+
+For a complete test from the frontend to the 2 backend api, the following commands can be executed:
+
+```bash
+curl http://localhost:8080/node-api/api/countries
+```
+
+```bash
+curl http://localhost:8080/plumber-api/api/health
 ```
 
 For a local deployment, the web application can finally be accessed from a browser using:
@@ -963,10 +987,10 @@ sudo docker logs -f <container-name>
 Separate image tags are used for the four components of the application. The version number is based on the date on which the image was created. For example:
 
 ```text
-chbaah/dissertation-mpi:postgres-v20260914
-chbaah/dissertation-mpi:plumber-v20260914
-chbaah/dissertation-mpi:node-v20260914
-chbaah/dissertation-mpi:frontend-v20260914
+chbaah/dissertation-mpi:postgres-v20260916
+chbaah/dissertation-mpi:plumber-v20260916
+chbaah/dissertation-mpi:node-v20260917
+chbaah/dissertation-mpi:frontend-v20260917
 ```
 
 A `latest` tag is also maintained for each component:
@@ -1014,16 +1038,17 @@ mpi-postgres
 
 rather than using a fixed container IP address.
 
-The frontend configuration is slightly different. The JavaScript code is downloaded from the frontend web server and executed by the user's browser. As a result, the URLs configured for the Node.js and Plumber APIs must be addresses that can be reached by the browser.
+The frontend is served by Nginx. Although the JavaScript code executes in the user's browser, the browser does not connect directly to the Node.js or Plumber containers. Instead, the frontend uses relative API paths. Requests beginning with /node-api/ and /plumber-api/ are sent to Nginx.
 
-For example, during local testing the following values can be used:
+Nginx operates inside the mpi-frontend container and is connected to the mpi-network Docker network. It can therefore resolve the Docker container names mpi-node and mpi-plumber using Docker's internal DNS service. Nginx forwards Node.js requests to mpi-node:3000 and Plumber requests to mpi-plumber:3796.
+
+This allows the browser to access the application through a single frontend address, such as http://localhost:8080, without requiring direct knowledge of the backend container names or ports.
+
 
 ```text
-NODE_API_URL=http://localhost:3000
-PLUMBER_API_URL=http://localhost:3796
+NODE_API_URL=/node-api
+PLUMBER_API_URL=/plumber-api
 ```
-
-For a remote deployment, `localhost` would have to be replaced with the hostname, IP address or domain name of the server hosting the APIs.
 
 
 The current Docker deployment can be represented as:
@@ -1033,34 +1058,43 @@ The current Docker deployment can be represented as:
                          User Browser
                               |
                               | HTTP
+                              | port 8080
                               v
-                     +----------------+
-                     |    Frontend    |
-                     |     Nginx      |
-                     |   port 8080    |
-                     +----------------+
-                        |          |
-                        |          |
-                        v          v
-                +-------------+  +-------------+
-                |   Node.js   |  |  R Plumber  |
-                | Express API |  | Prediction  |
-                |  port 3000  |  | API :3796   |
-                +-------------+  +-------------+
-                       |              |
-                       |              |
-                       +------+-------+
+                    +--------------------+
+                    |     Frontend       |
+                    |       Nginx        |
+                    |  Container port 80 |
+                    |                    |
+                    |    /node-api/      |
+                    |   /plumber-api/    |
+                    +---------+----------+
                               |
-                              v
-                     +----------------+
-                     |   PostgreSQL   |
-                     |   mpi database |
-                     |    port 5432   |
-                     +----------------+
+                 Docker internal network
+                      (mpi-network)
+                         /         \
+                        /           \
+                       v             v
+              +---------------+   +---------------+
+              |    Node.js    |   |   R Plumber   |
+              |  Express API  |   | Prediction API|
+              |   port 3000   |   |   port 3796   |
+              +-------+-------+   +-------+-------+
+                      |                   |
+                      |                   |
+                      +---------+---------+
+                                |
+                                | Docker internal network (mpi-network)
+                                v
+                       +------------------+
+                       |    PostgreSQL    |
+                       |   mpi database   |
+                       |    port 5432     |
+                       +------------------+
 
-Docker network: mpi-network
-Persistent database volume: mpi_postgres_data
+
 ```
+
+The Node.js, Plumber and PostgreSQL ports are currently published to the Docker host to allow the individual services to be tested directly during development. The frontend does not require direct access to these published ports because normal application requests are routed through Nginx. In a production deployment, unnecessary host-port mappings can be removed.
 
 ---
 
@@ -1072,10 +1106,8 @@ Possible future improvements include:
 
 * Docker Compose for managing the four containers as one application stack.
 * Docker health checks and dependency readiness checks.
-* Reverse proxying so the browser accesses the application through a single public endpoint.
 * TLS/HTTPS for production deployment.
 * Improved secret management instead of plain-text environment files.
-* Restricting PostgreSQL and Plumber from unnecessary public host-port exposure.
+* Restricting Node.js, Plumber and PostgreSQL from unnecessary public host-port exposure. In the run container the host port can be removed. When using cloud infra. security groups can be configured to prevent inbound connections on those ports.
 * Automated image builds and testing using CI/CD.
 * Automated deployment from versioned Docker images.
-

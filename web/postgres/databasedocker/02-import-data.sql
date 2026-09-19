@@ -1,8 +1,9 @@
-COPY combined_prep_table (
+COPY public.combined_prep_table (
+    "row.names",
+    collectiondate,
     country,
     countrycode,
     region,
-    collectiondate,
     ntlmeanintensity,
     ntlcoverageperc,
     lcumixedforestperc,

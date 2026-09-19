@@ -5,7 +5,6 @@
 library(lubridate)
 library(plumber)
 library(parsnip)
-library(tidymodels)
 library(recipes)
 library(RPostgreSQL)
 library(DBI)
