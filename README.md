@@ -15,5 +15,6 @@ The project investigates the prediction of subnational Multidimensional Poverty 
 - `web/node/` - Node.js backend API.
 - `web/frontend/` - Web frontend.
 - `web/postgres/` - PostgreSQL database container configuration.
-- `models/` - Documentation relating to trained models.
+- `env/` - Contains the env files needs to successfully start the container.
+- `models/` - Contains final trained model and recipe.
 - `docs/` - Additional project documentation.
